@@ -9,6 +9,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <script>
+        // High quality fallback avatar when local image path is unavailable
+        var FALLBACK_AVATAR = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop";
+
+        function handleImageError(imgElement) {
+            imgElement.onerror = null; // Prevent infinite fallback loops
+            imgElement.src = FALLBACK_AVATAR;
+        }
+    </script>
+
     <style>
         :root {
             --bg-main: #faf9f5;          /* Warm cream / alabaster background */
@@ -88,7 +98,7 @@
             left: 0;
             width: 100%;
             z-index: 1000;
-            background: rgba(250, 249, 245, 0.85);
+            background: rgba(250, 249, 245, 0.88);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-light);
@@ -121,6 +131,13 @@
             font-weight: 700;
             color: var(--primary-dark);
             font-size: 1.1rem;
+            overflow: hidden;
+        }
+
+        .logo-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logo-text {
@@ -165,6 +182,7 @@
         .btn-primary {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             background-color: var(--primary-dark);
             color: #ffffff;
@@ -182,11 +200,13 @@
             background-color: var(--primary-hover);
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(44, 68, 54, 0.22);
+            color: #ffffff;
         }
 
         .btn-secondary {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             background-color: transparent;
             color: var(--primary-dark);
@@ -286,7 +306,7 @@
         .hero-card {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 36px;
+            padding: 32px;
             box-shadow: var(--shadow-soft);
             border: 1px solid var(--border-subtle);
             position: relative;
@@ -312,33 +332,83 @@
         .profile-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 18px;
+            margin-bottom: 20px;
         }
 
-        .avatar-circle {
-            width: 68px;
-            height: 68px;
+        .avatar-container {
+            position: relative;
+            cursor: pointer;
+            group: relative;
+        }
+
+        .avatar-circle-large {
+            width: 86px;
+            height: 86px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--bg-sage-subtle), var(--bg-sage-light));
-            border: 2px solid var(--sage-accent);
+            border: 3px solid var(--sage-accent);
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .avatar-circle-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .avatar-upload-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(44, 68, 54, 0.7);
+            color: #ffffff;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: var(--font-heading);
-            font-size: 1.8rem;
-            color: var(--primary-dark);
-            font-weight: 700;
+            font-size: 0.65rem;
+            font-weight: 600;
+            opacity: 0;
+            transition: var(--transition);
+            border-radius: 50%;
+            text-align: center;
+            padding: 4px;
+        }
+
+        .avatar-container:hover .avatar-upload-overlay {
+            opacity: 1;
         }
 
         .profile-title-group h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             margin-bottom: 2px;
         }
 
         .profile-title-group p {
-            font-size: 0.88rem;
-            color: var(--text-muted);
+            font-size: 0.9rem;
+            color: var(--sage-accent);
+            font-weight: 600;
+        }
+
+        .photo-uploader-btn {
+            font-size: 0.75rem;
+            color: var(--primary-dark);
+            background: var(--bg-sage-light);
+            border: 1px dashed var(--sage-accent);
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 6px;
+            transition: var(--transition);
+        }
+
+        .photo-uploader-btn:hover {
+            background: var(--bg-sage-subtle);
         }
 
         .stat-grid {
@@ -355,11 +425,12 @@
             padding: 16px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-light);
+            text-align: center;
         }
 
         .stat-num {
             font-family: var(--font-heading);
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             font-weight: 700;
             color: var(--primary-dark);
             line-height: 1;
@@ -367,7 +438,7 @@
         }
 
         .stat-label {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -403,7 +474,7 @@
             border: 1px solid var(--border-subtle);
             box-shadow: var(--shadow-card);
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.1fr 0.9fr;
             gap: 40px;
         }
 
@@ -415,7 +486,7 @@
         }
 
         .about-text p {
-            font-size: 1.05rem;
+            font-size: 1.02rem;
             line-height: 1.8;
         }
 
@@ -467,8 +538,8 @@
             box-shadow: var(--shadow-card);
             transition: var(--transition);
             display: grid;
-            grid-template-columns: 240px 1fr;
-            gap: 24px;
+            grid-template-columns: 260px 1fr;
+            gap: 28px;
         }
 
         .timeline-card:hover {
@@ -480,7 +551,7 @@
         .timeline-meta {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
         }
 
         .company-name {
@@ -500,7 +571,7 @@
         .time-badge {
             display: inline-block;
             font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
             padding: 4px 12px;
             background: var(--bg-sage-light);
             color: var(--primary-dark);
@@ -539,12 +610,12 @@
             color: var(--sage-accent);
             font-size: 1.3rem;
             line-height: 1;
-            top: 0;
+            top: -1px;
         }
 
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
         }
 
@@ -646,7 +717,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: block;
         }
 
@@ -673,6 +744,7 @@
         .leadership-item span {
             font-size: 0.82rem;
             color: var(--sage-accent);
+            font-weight: 600;
             display: block;
             margin-bottom: 6px;
         }
@@ -687,6 +759,7 @@
             padding: 48px;
             text-align: center;
             border: 1px solid var(--border-light);
+            margin-top: 40px;
         }
 
         .interests-flex {
@@ -736,7 +809,7 @@
         .contact-details {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
             margin-top: 24px;
         }
 
@@ -748,7 +821,6 @@
             background: var(--bg-main);
             border-radius: var(--radius-md);
             border: 1px solid var(--border-light);
-            cursor: pointer;
             transition: var(--transition);
         }
 
@@ -768,6 +840,7 @@
             color: var(--primary-dark);
             font-weight: 700;
             box-shadow: var(--shadow-card);
+            flex-shrink: 0;
         }
 
         .contact-label {
@@ -782,6 +855,7 @@
             font-size: 0.95rem;
             font-weight: 600;
             color: var(--primary-dark);
+            word-break: break-all;
         }
 
         .contact-form {
@@ -852,7 +926,7 @@
         .modal-content {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -882,6 +956,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--bg-sage-subtle);
+        }
+
+        .resume-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg-sage-light);
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+
+        .resume-section-title {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--sage-accent);
+            margin-top: 24px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 4px;
         }
 
         .toast {
@@ -959,7 +1058,9 @@
     <header>
         <div class="container nav-container">
             <a href="#" class="logo">
-                <div class="logo-avatar">SL</div>
+                <div class="logo-avatar">
+                    <img id="navAvatarImg" src="IMG_0889.JPG" alt="Sienna Lopez" onerror="handleImageError(this)">
+                </div>
                 <span class="logo-text">Sienna Lopez</span>
             </a>
             <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">☰</button>
@@ -967,7 +1068,7 @@
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#experience" class="nav-link">Experience</a></li>
                 <li><a href="#skills" class="nav-link">Skills</a></li>
-                <li><a href="#education" class="nav-link">Education</a></li>
+                <li><a href="#education" class="nav-link">Education & Leadership</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><button class="btn-primary" onclick="openResumeModal()">View Resume</button></li>
             </ul>
@@ -979,15 +1080,19 @@
             <div class="hero-content">
                 <div class="hero-badge">
                     <span class="hero-badge-dot"></span>
-                    Cal Poly SLO • BS Business Administration '29
+                    Cal Poly SLO • BS Business Administration - Finance '29
                 </div>
                 <h1 class="hero-title">High-impact <span>Leadership</span>, Sales & Event Excellence</h1>
                 <p class="hero-subtitle">
-                    Second-year Business Administration student at California Polytechnic State University - Orfalea College of Business. Proven track record in field sales leadership, client communication, and dynamic event management.
+                    Business Administration undergraduate student at California Polytechnic State University, San Luis Obispo (Orfalea College of Business). Proven track record in field sales leadership, client communication, and dynamic event operations.
                 </p>
                 <div class="hero-cta">
                     <a href="#contact" class="btn-primary">Get In Touch →</a>
                     <button class="btn-secondary" onclick="openResumeModal()">Full Resume</button>
+                    <a href="https://www.linkedin.com/in/siennalopez28" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                        LinkedIn
+                    </a>
                 </div>
             </div>
             
@@ -995,18 +1100,22 @@
                 <div class="hero-card-decoration"></div>
                 <div class="hero-card-content">
                     <div class="profile-header">
-                        <div class="avatar-circle">SL</div>
+                        <div class="avatar-container">
+                            <div class="avatar-circle-large">
+                                <img id="heroAvatarImg" src="IMG_0889.JPG" alt="Sienna Lopez Headshot" onerror="handleImageError(this)">
+                            </div>
+                        </div>
                         <div class="profile-title-group">
                             <h3>Sienna Lopez</h3>
                             <p>San Luis Obispo, CA</p>
                         </div>
                     </div>
                     <p style="font-size: 0.92rem; line-height: 1.6; margin-bottom: 16px;">
-                        "Combining charismatic outreach with strict operational precision to deliver seamless events and drive record-breaking sales performance."
+                        "Combining charismatic outreach with strict operational precision to deliver seamless events, drive revenue, and build lasting client relationships."
                     </p>
                     <div class="stat-grid">
                         <div class="stat-item">
-                            <div class="stat-num">$20k+</div>
+                            <div class="stat-num">$20k</div>
                             <div class="stat-label">Sales in 5 Weeks</div>
                         </div>
                         <div class="stat-item">
@@ -1028,27 +1137,27 @@
 
             <div class="about-card">
                 <div class="about-text">
-                    <h3 style="font-size: 1.8rem; color: var(--primary-dark);">Building Lasting Client Relationships & Exceptional Experiences</h3>
+                    <h3 style="font-size: 1.8rem; color: var(--primary-dark);">Building Lasting Relationships & Exceptional Experiences</h3>
                     <p>
-                        As a second-year Business Administration undergraduate at Cal Poly SLO's Orfalea College of Business, I thrive in fast-paced environments that demand clear communication, adaptability, and tactical execution.
+                        As a Business Administration (Finance) undergraduate student at Cal Poly SLO's Orfalea College of Business, I thrive in fast-paced environments that demand clear communication, adaptability, and tactical execution.
                     </p>
                     <p>
-                        Whether managing high-pressure event breakdowns, driving $20,000+ in sales inside five weeks, or assisting prospective applicants in office management, I bring positive energy and attention to detail.
+                        Whether managing high-pressure event setup and breakdowns, driving $20,000+ in individual sales inside five weeks, or assisting prospective applicants in office management, I bring positive energy and meticulous attention to detail to every role.
                     </p>
                 </div>
 
                 <div class="about-pillars">
                     <div class="pillar-card">
                         <div class="pillar-title">Sales Leadership & Revenue Growth</div>
-                        <div class="pillar-desc">Rapidly promoted to Assistant Manager after exceeding key targets and conducting phone outreach.</div>
+                        <div class="pillar-desc">Promoted to Assistant Manager at Vector after generating $20,000 in sales in 5 weeks and conducting prospective interview outreach.</div>
                     </div>
                     <div class="pillar-card">
-                        <div class="pillar-title">Event Operations & Timelines</div>
-                        <div class="pillar-desc">Over 5 years of hands-on experience in high-end event execution, logistics, and private auction operations.</div>
+                        <div class="pillar-title">Event Operations & Execution</div>
+                        <div class="pillar-desc">Over 5 years of hands-on experience executing large-scale events (200-500 guests), private auctions, and tight setup turnarounds.</div>
                     </div>
                     <div class="pillar-card">
-                        <div class="pillar-title">Community & Team Collaboration</div>
-                        <div class="pillar-desc">Dedicated volunteer and assistant with strong group coordination skills and a customer-first focus.</div>
+                        <div class="pillar-title">Community & Tech Leadership</div>
+                        <div class="pillar-desc">Active participant in Women in Business, Vibe Coding Club (exploring work-related AI applications), and Grace Church Nursery volunteering.</div>
                     </div>
                 </div>
             </div>
@@ -1059,80 +1168,90 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">Career History</span>
-                <h2 class="section-title">Relevant Work Experience</h2>
+                <h2 class="section-title">Professional Experience</h2>
             </div>
 
             <div class="timeline">
-                <!-- Vector Card -->
+                <!-- Vector -->
                 <div class="timeline-card">
                     <div class="timeline-meta">
                         <div>
                             <div class="company-name">Vector</div>
                             <div class="role-title">Senior Field Sales Leader & Assistant Manager</div>
-                            <span class="time-badge">Sep 2025 - Aug 2026</span>
                         </div>
-                        <div class="location-tag">📍 San Luis Obispo, CA</div>
+                        <div>
+                            <span class="time-badge">Sep 2025 – Aug 2026</span>
+                            <div class="location-tag">📍 San Luis Obispo, CA</div>
+                        </div>
                     </div>
                     <div class="timeline-body">
                         <ul>
-                            <li>Promoted to Assistant Manager after generating $20,000 in sales within five weeks of starting.</li>
-                            <li>Communicated professionally and charismatically to build lasting, trust-based client relationships.</li>
-                            <li>Assisted with recruiting, scheduling prospective applicants, and conducted structured phone outreach.</li>
+                            <li>Generated $20,000 in individual sales within five weeks, earning rapid promotion to Assistant Manager.</li>
+                            <li>Built and maintained strong client relationships through persuasive, highly professional communication.</li>
+                            <li>Conducted phone outreach to prospective applicants and coordinated structured interview scheduling.</li>
+                            <li>Delivered on-camera pitches in Meta ad campaigns to support company-wide recruitment efforts.</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Finishing Touch LV Events Card -->
+                <!-- Finishing Touch LV Events LLC -->
                 <div class="timeline-card">
                     <div class="timeline-meta">
                         <div>
                             <div class="company-name">Finishing Touch LV Events LLC</div>
                             <div class="role-title">Event Associate & Assistant</div>
-                            <span class="time-badge">Mar 2021 - Aug 2026</span>
                         </div>
-                        <div class="location-tag">📍 Las Vegas, NV</div>
+                        <div>
+                            <span class="time-badge">Mar 2021 – Aug 2026</span>
+                            <div class="location-tag">📍 Las Vegas, NV</div>
+                        </div>
                     </div>
                     <div class="timeline-body">
                         <ul>
-                            <li>Assisted in comprehensive event setup, breakdown, and day-of operations to ensure smooth, high-end turnouts.</li>
-                            <li>Demonstrated high flexibility in fast-paced, high-pressure environments, mastering new protocols at the drop of a hat.</li>
-                            <li>Collaborated with diverse team members to meet strict client timelines with meticulous attention to detail.</li>
+                            <li>Executed setup and breakdown for large-scale corporate and private events hosting 200–500 guests.</li>
+                            <li>Adapted quickly to on-call, high-pressure environments, executing new tasks with short notice across varied event styles.</li>
+                            <li>Delivered consistent, detail-oriented operational support under tight turnaround schedules.</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- LifeTime Card -->
+                <!-- LifeTime -->
                 <div class="timeline-card">
                     <div class="timeline-meta">
                         <div>
                             <div class="company-name">LifeTime</div>
                             <div class="role-title">Summer Camp Counselor</div>
-                            <span class="time-badge">May 2025 - Jul 2025</span>
                         </div>
-                        <div class="location-tag">📍 Las Vegas, NV</div>
+                        <div>
+                            <span class="time-badge">May 2025 – Jul 2025</span>
+                            <div class="location-tag">📍 Las Vegas, NV</div>
+                        </div>
                     </div>
                     <div class="timeline-body">
                         <ul>
-                            <li>Managed front desk check-in operations and communicated clearly with parents, staff, and supervisors.</li>
-                            <li>Supervised and coordinated dynamic activities for large groups while maintaining a safe, organized environment.</li>
+                            <li>Managed daily check-ins and resolved parent communication issues, ensuring seamless coordination between families and leadership staff.</li>
+                            <li>Supervised groups of up to 30 kids (ages 7–12) independently and in counselor teams, maintaining total safety across a camp of 70+ attendees.</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- Southern California Racing Club Card -->
+                <!-- Southern California Racing Club -->
                 <div class="timeline-card">
                     <div class="timeline-meta">
                         <div>
                             <div class="company-name">Southern California Racing Club</div>
-                            <div class="role-title">Private Auction & Raffle Representative</div>
-                            <span class="time-badge">Nov 2019 - Nov 2024</span>
+                            <div class="role-title">Seasonal Private Auction & Raffle Representative</div>
                         </div>
-                        <div class="location-tag">📍 San Diego, CA</div>
+                        <div>
+                            <span class="time-badge">Nov 2019 – Nov 2024</span>
+                            <div class="location-tag">📍 San Diego, CA</div>
+                        </div>
                     </div>
                     <div class="timeline-body">
                         <ul>
-                            <li>Processed financial transactions and handled high-volume cash carefully and professionally.</li>
-                            <li>Promoted raffle and high-ticket auction sales through warm, engaging, and positive guest interactions.</li>
+                            <li>Processed hundreds of dollars in cash and digital transactions per event with 100% accuracy and professionalism.</li>
+                            <li>Approached guests directly, presenting raffle and auction rules and prize packages to drive bid participation.</li>
+                            <li>Fostered warm guest interactions that encouraged repeat attendance and participation across consecutive events.</li>
                         </ul>
                     </div>
                 </div>
@@ -1143,112 +1262,118 @@
     <section class="section-padding" id="skills">
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">Competencies</span>
-                <h2 class="section-title">Skills & Strengths</h2>
+                <span class="section-tag">Capabilities</span>
+                <h2 class="section-title">Skills & Expertise</h2>
             </div>
 
             <div class="skills-grid">
                 <div class="skill-category">
                     <div class="category-header">
-                        <div class="category-icon">📈</div>
-                        <h3 class="category-title">Sales & Strategy</h3>
+                        <div class="category-icon">💼</div>
+                        <h3 class="category-title">Sales & Business</h3>
                     </div>
                     <div class="tag-cloud">
                         <span class="tag">Field Sales Leadership</span>
-                        <span class="tag">Revenue Generation</span>
-                        <span class="tag">Recruiting & Scheduling</span>
-                        <span class="tag">Outreach Communications</span>
+                        <span class="tag">Direct Sales</span>
+                        <span class="tag">Client Relationship Management</span>
+                        <span class="tag">Recruitment Outreach</span>
+                        <span class="tag">Public Speaking</span>
+                        <span class="tag">Financial Accounting</span>
+                        <span class="tag">Managerial Accounting</span>
                     </div>
                 </div>
 
                 <div class="skill-category">
                     <div class="category-header">
-                        <div class="category-icon">✨</div>
-                        <h3 class="category-title">Event Operations</h3>
+                        <div class="category-icon">🎪</div>
+                        <h3 class="category-title">Events & Operations</h3>
                     </div>
                     <div class="tag-cloud">
-                        <span class="tag">Event Operations</span>
-                        <span class="tag">Setup & Breakdown</span>
-                        <span class="tag">Timeline Management</span>
-                        <span class="tag">Auction & Cash Handling</span>
+                        <span class="tag">Event Setup & Breakdown</span>
+                        <span class="tag">Large-Scale Events (200-500 guests)</span>
+                        <span class="tag">Private Auction Operations</span>
+                        <span class="tag">Cash Handling & POS</span>
+                        <span class="tag">Team Coordination</span>
+                        <span class="tag">On-Call Adaptability</span>
                     </div>
                 </div>
 
                 <div class="skill-category">
                     <div class="category-header">
-                        <div class="category-icon">🤝</div>
-                        <h3 class="category-title">Interpersonal & Tools</h3>
+                        <div class="category-icon">💻</div>
+                        <h3 class="category-title">Software & Tools</h3>
                     </div>
                     <div class="tag-cloud">
-                        <span class="tag">Customer Service</span>
-                        <span class="tag">Email Communication</span>
-                        <span class="tag">Teamwork & Leadership</span>
-                        <span class="tag">Microsoft Word</span>
                         <span class="tag">Microsoft Excel</span>
+                        <span class="tag">Microsoft Word</span>
+                        <span class="tag">PowerPoint</span>
+                        <span class="tag">AI Implementation / Tools</span>
+                        <span class="tag">Information Systems</span>
+                        <span class="tag">Email Communication</span>
+                        <span class="tag">Meta Campaign Pitches</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section-padding" id="education" style="background: var(--bg-sage-light); border-top: 1px solid var(--border-light);">
+    <section class="section-padding" id="education" style="background: var(--bg-sage-light); border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">Background</span>
+                <span class="section-tag">Academic & Community</span>
                 <h2 class="section-title">Education & Leadership</h2>
             </div>
 
             <div class="edu-grid">
-                <!-- Education Card -->
                 <div class="edu-card">
                     <div>
-                        <div class="time-badge" style="margin-bottom: 12px;">Expected Grad Summer 2029</div>
-                        <h3 class="edu-degree">B.S. in Business Administration</h3>
-                        <div class="edu-school">Cal Poly San Luis Obispo</div>
-                        <p style="font-size: 0.95rem;">Orfalea College of Business — Second-Year Undergraduate Student.</p>
-                        
-                        <div class="course-list">
-                            <span class="course-label">Relevant Coursework</span>
-                            <div class="tag-cloud">
-                                <span class="tag">Accounting</span>
-                                <span class="tag">Public Speaking</span>
-                                <span class="tag">Legal Responsibilities of Business</span>
-                            </div>
+                        <div class="time-badge" style="margin-bottom: 12px;">Expected Graduation: Summer 2029</div>
+                        <h3 class="edu-degree">BS in Business Administration</h3>
+                        <div class="edu-school">California Polytechnic State University, San Luis Obispo</div>
+                        <p style="font-weight: 600; color: var(--primary-dark); margin-bottom: 12px;">Concentration: Finance • Orfalea College of Business</p>
+                    </div>
+                    <div class="course-list">
+                        <span class="course-label">Relevant Coursework</span>
+                        <div class="tag-cloud">
+                            <span class="tag">Financial Accounting</span>
+                            <span class="tag">Managerial Accounting</span>
+                            <span class="tag">Public Speaking</span>
+                            <span class="tag">Legal Responsibilities of Business</span>
+                            <span class="tag">Information Systems</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Leadership & Involvement Card -->
                 <div class="edu-card">
-                    <div>
-                        <h3 style="font-size: 1.6rem; color: var(--primary-dark); margin-bottom: 16px;">Leadership & Volunteering</h3>
-                        <div class="leadership-list">
-                            <div class="leadership-item">
-                                <h4>Faith Lutheran High School</h4>
-                                <span>Teacher Assistant • Aug 2024 - May 2025</span>
-                                <p>Aided teachers with grading, printing, and course organization while tutoring students on new material.</p>
-                            </div>
-                            <div class="leadership-item">
-                                <h4>The Crossing Church</h4>
-                                <span>Nursery Volunteer • Jun 2021 - Jun 2023</span>
-                                <p>Welcomed families, managed check-in protocols, and created a safe, joyful environment for morning services.</p>
-                            </div>
+                    <h3 class="edu-degree" style="margin-bottom: 16px;">Leadership & Involvement</h3>
+                    <div class="leadership-list">
+                        <div class="leadership-item">
+                            <h4>Women in Business Member</h4>
+                            <span>2026 – Present</span>
+                            <p>Engage in weekly meetings, panels, and networking focused on professional growth and female leadership in business.</p>
+                        </div>
+                        <div class="leadership-item">
+                            <h4>Vibe Coding Club Member</h4>
+                            <span>2026 – Present</span>
+                            <p>Exploring and implementing artificial intelligence tools into real-world business and productivity areas.</p>
+                        </div>
+                        <div class="leadership-item">
+                            <h4>Grace Church Growth Group & Nursery Volunteer</h4>
+                            <span>2026 – Present</span>
+                            <p>Active growth group member and weekly volunteer coordinating care for young families.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Personal Interests -->
-            <div style="margin-top: 48px;">
-                <div class="interests-section">
-                    <h3 style="font-size: 1.8rem; color: var(--primary-dark);">Beyond the Resume</h3>
-                    <p style="margin-top: 6px;">Activities & personal passions that keep me energized and active.</p>
-                    <div class="interests-flex">
-                        <span class="interest-chip">📚 Reading</span>
-                        <span class="interest-chip">💪 Fitness & Athletics</span>
-                        <span class="interest-chip">✈️ Traveling</span>
-                        <span class="interest-chip">💃 Line & Swing Dancing</span>
-                    </div>
+            <div class="interests-section">
+                <h3 style="font-size: 1.8rem; color: var(--primary-dark); margin-bottom: 8px;">Activities & Personal Interests</h3>
+                <p>Maintaining energy and community connection outside of academics & business</p>
+                <div class="interests-flex">
+                    <div class="interest-chip">💃 Line Dancing & Swing Dancing</div>
+                    <div class="interest-chip">🏐 Enthusiastic Volleyball Player</div>
+                    <div class="interest-chip">⚡ Spikeball Athlete</div>
+                    <div class="interest-chip">🤖 AI & Tech Exploration</div>
                 </div>
             </div>
         </div>
@@ -1258,37 +1383,46 @@
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">Connect</span>
-                <h2 class="section-title">Let's Work Together</h2>
+                <h2 class="section-title">Get In Touch</h2>
+                <p>Interested in collaborating, hiring, or learning more? Feel free to reach out!</p>
             </div>
 
             <div class="contact-box">
                 <div class="contact-info">
                     <div>
-                        <h3 style="font-size: 2rem; color: var(--primary-dark); margin-bottom: 12px;">Get in Touch</h3>
-                        <p>I am actively seeking internship, sales, and event operations opportunities. Feel free to reach out directly via email or phone!</p>
+                        <h3 style="font-size: 2rem; color: var(--primary-dark); margin-bottom: 12px;">Let's Work Together</h3>
+                        <p>I am always open to discussing sales opportunities, event management roles, finance internships, or campus leadership projects.</p>
                         
                         <div class="contact-details">
-                            <div class="contact-item" onclick="copyToClipboard('SiennaL528@gmail.com', 'Email address copied!')">
+                            <a href="mailto:SiennaL528@gmail.com" class="contact-item">
                                 <div class="contact-icon">✉️</div>
                                 <div>
-                                    <div class="contact-label">Email (Click to copy)</div>
+                                    <div class="contact-label">Email</div>
                                     <div class="contact-val">SiennaL528@gmail.com</div>
                                 </div>
-                            </div>
+                            </a>
 
-                            <div class="contact-item" onclick="copyToClipboard('(702) 963-6150', 'Phone number copied!')">
+                            <a href="tel:7029636150" class="contact-item">
                                 <div class="contact-icon">📞</div>
                                 <div>
-                                    <div class="contact-label">Phone (Click to copy)</div>
+                                    <div class="contact-label">Phone</div>
                                     <div class="contact-val">(702) 963-6150</div>
                                 </div>
-                            </div>
+                            </a>
 
-                            <div class="contact-item" style="cursor: default;">
+                            <a href="https://www.linkedin.com/in/siennalopez28" target="_blank" rel="noopener noreferrer" class="contact-item">
+                                <div class="contact-icon">🔗</div>
+                                <div>
+                                    <div class="contact-label">LinkedIn</div>
+                                    <div class="contact-val">linkedin.com/in/siennalopez28</div>
+                                </div>
+                            </a>
+
+                            <div class="contact-item">
                                 <div class="contact-icon">📍</div>
                                 <div>
                                     <div class="contact-label">Location</div>
-                                    <div class="contact-val">San Luis Obispo, CA 93410</div>
+                                    <div class="contact-val">San Luis Obispo, CA 93405</div>
                                 </div>
                             </div>
                         </div>
@@ -1298,115 +1432,128 @@
                 <form class="contact-form" id="contactForm" onsubmit="handleFormSubmit(event)">
                     <div class="form-group">
                         <label for="name">Your Name</label>
-                        <input type="text" id="name" class="form-input" placeholder="e.g. Jane Doe" required>
+                        <input type="text" id="name" class="form-input" placeholder="e.g., Jane Doe" required>
                     </div>
+
                     <div class="form-group">
                         <label for="email">Your Email</label>
-                        <input type="email" id="email" class="form-input" placeholder="e.g. jane@company.com" required>
+                        <input type="email" id="email" class="form-input" placeholder="e.g., jane@example.com" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" class="form-input" placeholder="Inquiry / Leadership Opportunity" required>
+                    </div>
+
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" class="form-textarea" placeholder="How can Sienna help your organization?" required></textarea>
+                        <textarea id="message" class="form-textarea" placeholder="Hello Sienna, I'd love to connect regarding..." required></textarea>
                     </div>
-                    <button type="submit" class="btn-primary" style="justify-content: center;">Send Message</button>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 14px;">Send Message →</button>
                 </form>
             </div>
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>© 2026 Sienna Lopez • California Polytechnic State University, San Luis Obispo</p>
-        </div>
-    </footer>
-
-    <div class="modal-overlay" id="resumeModal" onclick="closeResumeModalOnOverlay(event)">
+    <div class="modal-overlay" id="resumeModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeResumeModal()">✕</button>
+            <button class="modal-close" onclick="closeResumeModal()" aria-label="Close modal">✕</button>
             
-            <div style="text-align: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
-                <h2 style="font-size: 2.2rem; color: var(--primary-dark);">SIENNA LOPEZ</h2>
-                <p style="font-size: 0.95rem; color: var(--text-dark); margin-top: 4px;">
-                    San Luis Obispo, CA 93410 | (702) 963-6150 | SiennaL528@gmail.com
+            <div class="resume-modal-header">
+                <div>
+                    <h2 style="font-size: 2.2rem; color: var(--primary-dark);">SIENNA LOPEZ</h2>
+                    <p style="color: var(--sage-accent); font-weight: 600;">San Luis Obispo, CA 93405 | (702) 963-6150 | SiennaL528@gmail.com</p>
+                </div>
+                <button class="btn-primary" onclick="window.print()" style="font-size: 0.82rem; padding: 8px 16px;">🖨️ Print Resume</button>
+            </div>
+
+            <div>
+                <div class="resume-section-title">Education</div>
+                <p><strong>California Polytechnic State University, San Luis Obispo</strong></p>
+                <p>Bachelor of Science in Business Administration - Finance | Expected Graduation: Summer 2029</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">
+                    <strong>Relevant Coursework:</strong> Financial Accounting, Managerial Accounting, Public Speaking, Legal Responsibilities of Business, Information Systems
                 </p>
-            </div>
 
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <div>
-                    <h4 style="color: var(--sage-accent); letter-spacing: 1px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 8px;">EDUCATION</h4>
-                    <p style="font-weight: 700; color: var(--primary-dark);">California Polytechnic State University - Orfalea College of Business</p>
-                    <p style="font-size: 0.92rem;">Bachelor of Science in Business Administration • Expected Graduation: Summer 2029</p>
-                    <p style="font-size: 0.88rem; color: var(--text-muted);"><strong>Relevant Coursework:</strong> Accounting, Public Speaking, Legal Responsibilities of Business</p>
+                <div class="resume-section-title">Experience</div>
+                
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                        <span>Vector — Senior Field Sales Leader & Assistant Manager</span>
+                        <span>Sep 2025 – Aug 2026</span>
+                    </div>
+                    <div style="font-style: italic; font-size: 0.9rem; margin-bottom: 4px;">San Luis Obispo, CA</div>
+                    <ul style="padding-left: 18px; font-size: 0.92rem;">
+                        <li>Generated $20,000 in individual sales within five weeks, earning promotion to Assistant Manager</li>
+                        <li>Built and maintained client relationships through persuasive, professional communication</li>
+                        <li>Conducted phone outreach to prospective applicants and coordinated interview scheduling</li>
+                        <li>Delivered on-camera pitches in Meta ad campaigns to support recruitment efforts</li>
+                    </ul>
                 </div>
 
-                <div>
-                    <h4 style="color: var(--sage-accent); letter-spacing: 1px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 8px;">RELEVANT EXPERIENCE</h4>
-                    
-                    <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--primary-dark); font-size: 0.95rem;">
-                            <span>Vector — Senior Field Sales Leader & Assistant Manager</span>
-                            <span>Sep 2025 – Aug 2026</span>
-                        </div>
-                        <ul style="padding-left: 18px; font-size: 0.88rem; margin-top: 4px;">
-                            <li>Promoted to Assistant Manager after generating $20,000 in sales within five weeks.</li>
-                            <li>Communicated professionally and charismatically to build lasting client relationships.</li>
-                            <li>Assisted with recruiting, scheduling for prospective applicants, and conducted phone outreach.</li>
-                        </ul>
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                        <span>Finishing Touch LV Events LLC — Event Associate & Assistant</span>
+                        <span>Mar 2021 – Aug 2026</span>
                     </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--primary-dark); font-size: 0.95rem;">
-                            <span>Finishing Touch LV Events LLC — Event Associate & Assistant</span>
-                            <span>Mar 2021 – Aug 2026</span>
-                        </div>
-                        <ul style="padding-left: 18px; font-size: 0.88rem; margin-top: 4px;">
-                            <li>Assisted in event setup, breakdown, and day-of operations to ensure smooth turnouts.</li>
-                            <li>Flexible in high-pressure situations, mastering new skills at the drop of a hat.</li>
-                            <li>Collaborated with team members to meet strict timelines with precise detail.</li>
-                        </ul>
-                    </div>
-
-                    <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--primary-dark); font-size: 0.95rem;">
-                            <span>LifeTime — Summer Camp Counselor</span>
-                            <span>May 2025 – Jul 2025</span>
-                        </div>
-                        <ul style="padding-left: 18px; font-size: 0.88rem; margin-top: 4px;">
-                            <li>Managed front desk check-ins and communicated clearly with parents and supervisors.</li>
-                            <li>Supervised and coordinated activities for large groups in an organized environment.</li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--primary-dark); font-size: 0.95rem;">
-                            <span>Southern California Racing Club — Private Auction Representative</span>
-                            <span>Nov 2019 – Nov 2024</span>
-                        </div>
-                        <ul style="padding-left: 18px; font-size: 0.88rem; margin-top: 4px;">
-                            <li>Processed transactions and handled cash carefully and professionally.</li>
-                            <li>Promoted raffle and auction sales by building positive guest interactions.</li>
-                        </ul>
-                    </div>
+                    <div style="font-style: italic; font-size: 0.9rem; margin-bottom: 4px;">Las Vegas, NV</div>
+                    <ul style="padding-left: 18px; font-size: 0.92rem;">
+                        <li>Executed setup and breakdown for large-scale events (200-500 guests)</li>
+                        <li>Adapted quickly to on-call, high-pressure environments, picking up new tasks with little notice across a range of event types</li>
+                        <li>Delivered consistent, detail-oriented support across events, often under tight turnaround times</li>
+                    </ul>
                 </div>
 
-                <div>
-                    <h4 style="color: var(--sage-accent); letter-spacing: 1px; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 8px;">SKILLS & INTERESTS</h4>
-                    <p style="font-size: 0.88rem;"><strong>Skills:</strong> Microsoft Word, Excel, Email Communication, Customer Service, Sales, Time Management, Teamwork</p>
-                    <p style="font-size: 0.88rem;"><strong>Interests:</strong> Reading, Fitness, Traveling, Line & Swing Dancing, Athletics</p>
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                        <span>LifeTime — Summer Camp Counselor</span>
+                        <span>May 2025 – Jul 2025</span>
+                    </div>
+                    <div style="font-style: italic; font-size: 0.9rem; margin-bottom: 4px;">Las Vegas, NV</div>
+                    <ul style="padding-left: 18px; font-size: 0.92rem;">
+                        <li>Managed check-ins and resolved parent communication issues, ensuring clear coordination between families and staff</li>
+                        <li>Supervised groups of up to 30 kids (ages 7-12) independently and in teams, maintaining safety across a camp of 70+</li>
+                    </ul>
                 </div>
-            </div>
 
-            <div style="margin-top: 24px; text-align: center;">
-                <button class="btn-primary" onclick="window.print()">🖨️ Print Resume</button>
+                <div style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                        <span>Southern California Racing Club — Seasonal Private Auction & Raffle Representative</span>
+                        <span>Nov 2019 – Nov 2024</span>
+                    </div>
+                    <div style="font-style: italic; font-size: 0.9rem; margin-bottom: 4px;">San Diego, CA</div>
+                    <ul style="padding-left: 18px; font-size: 0.92rem;">
+                        <li>Processed hundreds of dollars in cash and card transactions per event with accuracy and professionalism</li>
+                        <li>Approached guests directly and explained raffle/auction rules and prizes to drive ticket and bid sales</li>
+                        <li>Built positive guest interactions that encouraged repeat participation across consecutive events</li>
+                    </ul>
+                </div>
+
+                <div class="resume-section-title">Involvement & Leadership</div>
+                <p><strong>Women in Business Member</strong> (2026) — Engage in weekly meetings, panels, and networking focused on growth in business</p>
+                <p><strong>Vibe Coding Club Member</strong> (2026) — Learning to use and implement AI in work-related areas</p>
+                <p><strong>Grace Church Growth Group Member & Nursery Volunteer</strong> (2026)</p>
+
+                <div class="resume-section-title">Skills & Interests</div>
+                <p><strong>Skills:</strong> Microsoft Word, Excel, PowerPoint, Email Communication, Customer Service, Sales, Events, AI Implementation</p>
+                <p><strong>Activities & Interests:</strong> Weekly Line Dancing & Swing Dancing Involvement, Enthusiastic Volleyball & Spikeball Athlete</p>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification Element -->
-    <div class="toast" id="toast">Message copied to clipboard!</div>
+    <div class="toast" id="toast">
+        <span>✓</span> Message sent successfully! I'll get back to you soon.
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Sienna Lopez. All rights reserved. • Built with passion for excellence.</p>
+        </div>
+    </footer>
 
     <script>
-        // Mobile menu toggle
+        // Mobile Navigation Toggle Handler
         const mobileToggle = document.getElementById('mobileToggle');
         const navLinks = document.getElementById('navLinks');
 
@@ -1414,58 +1561,43 @@
             navLinks.classList.toggle('active');
         });
 
-        // Close mobile nav when clicking a link
+        // Close mobile nav menu on link click
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
             });
         });
 
-        // Copy to clipboard helper function
-        function copyToClipboard(text, message) {
-            const tempInput = document.createElement('input');
-            tempInput.value = text;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
+        // Resume Modal Handlers
+        const resumeModal = document.getElementById('resumeModal');
 
-            showToast(message);
-        }
-
-        // Show toast notification
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Contact form submit handling
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            const name = document.getElementById('name').value;
-            showToast(`Thank you, ${name}! Your message has been sent.`);
-            document.getElementById('contactForm').reset();
-        }
-
-        // Resume Modal Handling
         function openResumeModal() {
-            document.getElementById('resumeModal').classList.add('active');
+            resumeModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         function closeResumeModal() {
-            document.getElementById('resumeModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
+            resumeModal.classList.remove('active');
+            document.body.style.overflow = '';
         }
 
-        function closeResumeModalOnOverlay(event) {
-            if (event.target.id === 'resumeModal') {
+        // Close modal when clicking on dark backdrop
+        resumeModal.addEventListener('click', (e) => {
+            if (e.target === resumeModal) {
                 closeResumeModal();
             }
+        });
+
+        // Contact Form Submission Handler
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            document.getElementById('contactForm').reset();
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
         }
     </script>
 </body>
