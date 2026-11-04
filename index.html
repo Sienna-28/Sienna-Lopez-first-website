@@ -117,6 +117,23 @@
       border-bottom: 1px solid var(--border-subtle);
     }
 
+    .hero-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-headshot {
+      width: 220px;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 2px;
+      border: 8px solid #ffffff;
+      box-shadow: 0 18px 45px rgba(11, 31, 23, 0.16);
+    }
+
     .hero-eyebrow {
       display: inline-flex;
       align-items: center;
@@ -515,6 +532,14 @@
       .hero {
         padding: 12rem 1.75rem 7rem 1.75rem;
       }
+      .hero-layout {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .hero-headshot {
+        width: 180px;
+        order: -1;
+      }
       section {
         padding: 7rem 1.75rem;
       }
@@ -549,11 +574,16 @@
 
   <main>
     <div class="hero">
-      <div class="hero-eyebrow">Finance Student Looking to Grow</div>
+      <div class="hero-layout">
+        <div>
+          <div class="hero-eyebrow">Finance Student Looking to Grow</div>
       <h1 class="hero-title">Building a foundation for a career in finance.</h1>
       <p class="hero-subtitle">
         I am a Business Administration student concentrating in Finance at Cal Poly San Luis Obispo. I am seeking internship and early-career opportunities where I can learn from experienced teams and build practical skills in finance, business operations, and client service. My experience in sales leadership, client management, and event operations has given me a strong work ethic and a desire to keep learning.
       </p>
+        </div>
+        <img class="hero-headshot" src="assets/sienna-headshot.jpg" alt="Headshot of Sienna Lopez">
+      </div>
 
       <div class="metrics-grid">
         <div class="metric-card">
